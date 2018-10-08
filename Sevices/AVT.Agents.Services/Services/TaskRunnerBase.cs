@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AVT.Agent.DTO;
+using Avt.Agents.Services.DTO;
+using Avt.Agents;
+using Avt.Agents.Services.Common;
+using Avt.Agents.Services.DTO;
 
-namespace AVT.Agent.Services
+namespace Avt.Agents.Services.Services
 {
     public abstract class TaskRunnerBase : IDisposable
     {
@@ -38,8 +41,7 @@ namespace AVT.Agent.Services
             {
                 VehicleId = vin,
                 NextSchedule = nextDate,
-                PreviousSchedule = prevDate,
-                State = 1
+                PreviousSchedule = prevDate
             });
 
             callback?.Invoke(vin, key);

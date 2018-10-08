@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using Microsoft.Extensions.Configuration;
 
-namespace AVT.Agent
+namespace Avt.Agents.Services.Common
 {
     public class Shared
     {

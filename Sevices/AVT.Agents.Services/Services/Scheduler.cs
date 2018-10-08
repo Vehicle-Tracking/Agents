@@ -5,11 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.SQS;
 using Amazon.SQS.Model;
-using AVT.Agent.DTO;
-using AVT.Agent.Utils;
+using Avt.Agents.Services.DTO;
+using Avt.Agents.Services.Utils;
 using Microsoft.Extensions.Logging;
 
-namespace AVT.Agent.Services
+namespace Avt.Agents.Services.Services
 {
     public class Scheduler : TaskRunnerBase
     {
@@ -40,7 +40,7 @@ namespace AVT.Agent.Services
         private void Reschedule(VehicleStatusModel status)
         {
             if (!DateTime.TryParse(status.StatusDate, out var date))
-                date = DateTime.UtcNow.AddSeconds(-5);
+                date = DateTime.UtcNow.AddSeconds(-8); // if the date is not valid then set the date to last 8 seconds, 8 seconds is for medium network latency
 
             // maybe we need a better approach in real-world, because here waiting list is not processed any more and if no message is received  vehicle
             // with specific vin then that vehicle will wait forever, this happens only when the queue can not be read
@@ -50,7 +50,7 @@ namespace AVT.Agent.Services
                 {
                     _waitingList.Remove(status.VehicleId);
 
-                    CreateItem(status.VehicleId, date, 75, AddToMappingList);
+                    CreateItem(status.VehicleId, date, 75, AddToMappingList); // check it in the next 75 seconds, 15 second is for latency in the network
                 }
                 else
                 {
@@ -60,8 +60,8 @@ namespace AVT.Agent.Services
                         if (JobQueue.ContainsKey(key))
                         {
                             JobQueue.Remove(key);
-                            CreateItem(status.VehicleId, date, 75, AddToMappingList);
                         }
+                        CreateItem(status.VehicleId, date, 75, AddToMappingList);
                     }
                     else
                     {
@@ -71,7 +71,7 @@ namespace AVT.Agent.Services
             }
         }
 
-        private async Task CheckeTimeout(CancellationToken cancellationToken)
+        private async Task SearchForDisconnectedVehicles(CancellationToken cancellationToken)
         {
             while (true)
             {
@@ -92,15 +92,18 @@ namespace AVT.Agent.Services
                     item = JobQueue[topKey];
                 }
 
-                while (!(await HttpHelper.SendStatus(item.VehicleId, 0, DateTime.UtcNow, cancellationToken)))
+                int cntr = 0;
+                while (!(await HttpHelper.SendStatus(item.VehicleId, 0, DateTime.UtcNow, cancellationToken)) && ++cntr > 10) // Stubborn message seder
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(1000), cancellationToken);
                 }
 
+                if (cntr > 10) break; // if yes then message was not sent so give all a try in the next round
+
                 lock (locker)
                 {
-                    _waitingList.Add(item.VehicleId, item);
-                    JobQueue.Remove(topKey);
+                    _waitingList.Add(item.VehicleId, item); // wait until to get a response an get rescheduled
+                    JobQueue.Remove(topKey);  // temporarily remove it from scheduled jobs
                     break;
                 }
             }
@@ -157,7 +160,7 @@ namespace AVT.Agent.Services
                 // do nothing, you may want to log, but let it give it another try in the next run
             }
         }
-        public void AddToMappingList(string vin, double key)
+        private void AddToMappingList(string vin, double key)
         {
             if (_mappingList.ContainsKey(vin))
                 _mappingList[vin] = key;
@@ -178,7 +181,7 @@ namespace AVT.Agent.Services
                 {
                     try
                     {
-                        await CheckeTimeout(cancellationToken);
+                        await SearchForDisconnectedVehicles(cancellationToken);
                         await CheckQueueForNewStatus(cancellationToken);
                     }
                     catch (Exception ex)

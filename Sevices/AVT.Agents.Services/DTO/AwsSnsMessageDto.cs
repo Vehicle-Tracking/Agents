@@ -1,4 +1,4 @@
-﻿namespace AVT.Agent.DTO
+﻿namespace Avt.Agents.Services.DTO
 {
     public class AwsSnsMessageDto
     {

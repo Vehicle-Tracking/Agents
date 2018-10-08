@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Avt.Agents.Services.Common;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace AVT.Agent.Services
+namespace Avt.Agents.Services.Services
 {
     public class DaemonService : IHostedService, IDisposable
     {

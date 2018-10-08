@@ -1,4 +1,4 @@
-﻿namespace AVT.Agent.Common
+﻿namespace Avt.Agents.Services.Common
 {
     public class ServiceConfig
     {

@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
-using AVT.Agent.Services;
+using Avt.Agents.Services.Common;
+using Avt.Agents.Services.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace AVT.Agent
+namespace Avt.Agents.Services
 {
     public class Program
     {
@@ -14,7 +15,6 @@ namespace AVT.Agent
             var builder = new HostBuilder()
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
-                    
                     config.AddEnvironmentVariables();
 
                     if (args != null)

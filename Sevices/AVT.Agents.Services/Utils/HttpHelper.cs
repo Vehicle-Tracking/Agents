@@ -4,8 +4,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Avt.Agents.Services.Common;
 
-namespace AVT.Agent
+namespace Avt.Agents.Services.Utils
 {
     public class HttpHelper
     {

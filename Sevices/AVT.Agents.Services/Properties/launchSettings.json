@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "AVT.Agent": {
+    "Avt.Agents": {
       "commandName": "Project",
       "commandLineArgs": "ServiceName=\"scheduler\""
     }

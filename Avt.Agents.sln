@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avt.AWS.Lambda.GatewayAutho
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avt.AWS.Lambda.PushToFanoutQueue", "AWS\Avt.AWS.Lambda.PushToFanoutQueue\Avt.AWS.Lambda.PushToFanoutQueue.csproj", "{E00C9977-E1BD-4D25-9AA5-2C0C3EDDEC37}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVT.Agents.Services", "Sevices\AVT.Agents.Services\AVT.Agents.Services.csproj", "{429858C8-1E47-4DF5-9EFD-813226A87B8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avt.Agents.Services", "Sevices\AVT.Agents.Services\Avt.Agents.Services.csproj", "{429858C8-1E47-4DF5-9EFD-813226A87B8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

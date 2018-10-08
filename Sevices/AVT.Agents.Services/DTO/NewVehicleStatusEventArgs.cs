@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AVT.Agent.DTO
+namespace Avt.Agents.Services.DTO
 {
     public class NewVehicleStatusEventArgs : EventArgs
     {

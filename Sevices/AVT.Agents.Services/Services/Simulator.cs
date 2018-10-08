@@ -2,9 +2,10 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Avt.Agents.Services.Utils;
 using Microsoft.Extensions.Logging;
 
-namespace AVT.Agent.Services
+namespace Avt.Agents.Services.Services
 {
     public class Simulator : TaskRunnerBase
     {

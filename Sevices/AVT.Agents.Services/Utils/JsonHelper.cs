@@ -4,7 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace AVT.Agent.Utils
+namespace Avt.Agents.Services.Utils
 {
     public class JsonHelper
     {
