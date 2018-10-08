@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AVT.Agent": {
+      "commandName": "Project",
+      "commandLineArgs": "ServiceName=\"scheduler\""
+    }
+  }
+}

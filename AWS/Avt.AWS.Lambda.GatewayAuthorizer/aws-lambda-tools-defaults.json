@@ -1,0 +1,18 @@
+
+{
+    "Information" : [
+        "SIMPLY accept all the incomming request for Api Gateway"
+    ],
+    "profile"     : "Personal",
+    "region"      : "eu-west-1",
+    "configuration" : "Release",
+    "framework"     : "netcoreapp2.1",
+    "function-runtime" : "dotnetcore2.1",
+    "function-memory-size" : 128,
+    "function-timeout"     : 30,
+    "function-handler"     : "Avt.AWS.Lambda.GatewayAuthorizer::Avt.AWS.Lambda.GatewayAuthorizer.ApiGatewaySimpleAuthorization::FunctionHandler",
+    "function-name"        : "ApiGatewaySimpleAuthorization",
+    "function-role"        : "arn:aws:iam::166778461577:role/lambda_exec_ApiGatewaySimpleAuthorization-0",
+    "tracing-mode"         : "PassThrough",
+    "environment-variables" : ""
+}

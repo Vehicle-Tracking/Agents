@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2035
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AWS", "AWS", "{2532D2B9-466E-45AF-A71D-D94822D0C18E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{52A25379-3B74-4560-BCF8-67A3F5D2F5B7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avt.AWS.Lambda.GatewayAuthorizer", "AWS\Avt.AWS.Lambda.GatewayAuthorizer\Avt.AWS.Lambda.GatewayAuthorizer.csproj", "{9BE8F6C9-00FF-4A3F-9C04-56BEEFC8211E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avt.AWS.Lambda.PushToFanoutQueue", "AWS\Avt.AWS.Lambda.PushToFanoutQueue\Avt.AWS.Lambda.PushToFanoutQueue.csproj", "{E00C9977-E1BD-4D25-9AA5-2C0C3EDDEC37}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVT.Agents.Services", "Sevices\AVT.Agents.Services\AVT.Agents.Services.csproj", "{429858C8-1E47-4DF5-9EFD-813226A87B8A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9BE8F6C9-00FF-4A3F-9C04-56BEEFC8211E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BE8F6C9-00FF-4A3F-9C04-56BEEFC8211E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BE8F6C9-00FF-4A3F-9C04-56BEEFC8211E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BE8F6C9-00FF-4A3F-9C04-56BEEFC8211E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E00C9977-E1BD-4D25-9AA5-2C0C3EDDEC37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E00C9977-E1BD-4D25-9AA5-2C0C3EDDEC37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E00C9977-E1BD-4D25-9AA5-2C0C3EDDEC37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E00C9977-E1BD-4D25-9AA5-2C0C3EDDEC37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{429858C8-1E47-4DF5-9EFD-813226A87B8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{429858C8-1E47-4DF5-9EFD-813226A87B8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{429858C8-1E47-4DF5-9EFD-813226A87B8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{429858C8-1E47-4DF5-9EFD-813226A87B8A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9BE8F6C9-00FF-4A3F-9C04-56BEEFC8211E} = {2532D2B9-466E-45AF-A71D-D94822D0C18E}
+		{E00C9977-E1BD-4D25-9AA5-2C0C3EDDEC37} = {2532D2B9-466E-45AF-A71D-D94822D0C18E}
+		{429858C8-1E47-4DF5-9EFD-813226A87B8A} = {52A25379-3B74-4560-BCF8-67A3F5D2F5B7}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1E8D6A73-2493-47F1-9CC1-5E128C93BF9C}
+	EndGlobalSection
+EndGlobal
