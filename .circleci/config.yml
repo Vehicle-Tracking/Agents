@@ -14,11 +14,11 @@ jobs:
       - run:
           name: "Build And Push"
           command: |
-            docker build -f Sevices/Avt.Agents.Services/Dockerfile:{{.BuildNum}} -t $DKR_IMG Sevices/Avt.Agents.Services
-            docker tag $DKR_IMG:{{ .BuildNum }} $DKR_REGITRY/$DKR_IMG:{{.BuildNum}}
+            docker build -f Dockerfile -t $DKR_IMG Sevices/AVT.Agents.Services
+            docker tag $DKR_IMG $DKR_REGITRY/$DKR_IMG:{{.BuildNum}}
             docker login -u $DKR_UID -p $DKR_PWD            
             docker push $DKR_REGITRY/$DKR_IMG:{{.BuildNum}}
-            docker tag $DKR_IMG:{{ .BuildNum }} $DKR_REGITRY/$DKR_IMG:latest
+            docker tag $DKR_IMG $DKR_REGITRY/$DKR_IMG:latest
             docker push $DKR_REGITRY/$DKR_IMG:latest
   deploy:
     <<: *defaults
