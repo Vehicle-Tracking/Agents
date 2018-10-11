@@ -19,9 +19,6 @@ jobs:
   deploy:
     machine:
       image: amazon/amazon-ecs-agent:latest
-    branches:
-      only:
-        - master
     steps:
       - attach_workspace:
           at: /root/project
