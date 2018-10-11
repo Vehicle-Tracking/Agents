@@ -14,6 +14,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="out\**" />
+    <EmbeddedResource Remove="out\**" />
+    <None Remove="out\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AWSSDK.Core" Version="3.3.27.1" />
     <PackageReference Include="AWSSDK.SQS" Version="3.3.3.22" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />

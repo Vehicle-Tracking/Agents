@@ -3,7 +3,7 @@
 version: 2
 jobs:
   build:
-   machine:
+    machine:
       image: circleci/classic:latest
       environment:
           ENV: CI
@@ -65,3 +65,14 @@ jobs:
              echo "*** creating service and task for simulator ... ***"  
              export DEPLOYED_SERVICE=$(aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_SIMULATOR --task-definition $ECS_TASK_NAME:$TASK_VERSION  | jq --raw-output  '.service.serviceName')
              echo "Deployment of $DEPLOYED_SERVICE complete"
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
