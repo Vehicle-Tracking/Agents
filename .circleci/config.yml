@@ -27,7 +27,6 @@ jobs:
           at: /root/project
       - run:
           name: "Prepare Environment"
-		  shell: /bin/bash
           command: |
              apk add curl
              apk add unzip
