@@ -16,13 +16,55 @@ jobs:
             docker login -u $DKR_UID -p $DKR_PWD  
             docker tag $DKR_IMG $DKR_REGITRY/$DKR_IMG:latest
             docker push $DKR_REGITRY/$DKR_IMG:latest
+      - run:
+          name: Save image to an archive
+          command: |
+            mkdir docker-image
+            docker save -o docker-image/image.tar $DKR_IMG
+      - persist_to_workspace:
+          root: .
+          paths:
+            - docker-image
   deploy:
-    machine:
-      image: circleci/python:2.7-jessie
-    working_directory: ~/circleci-docs
+    docker:
+      - image: circleci/python:3.6.1
+    environment:
+      AWS_DEFAULT_OUTPUT: json
     steps:
+      - checkout
+      - setup_remote_docker
       - attach_workspace:
-          at: /root/project
+          at: workspace
+      - restore_cache:
+          key: v1-{{ checksum "requirements.txt" }}
+      - run:
+          name: Install awscli
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - save_cache:
+          key: v1-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
+       - run:
+          name: "Prepare Environment"
+          command: |
+             echo "*** preconfiguring environment ... ***"    
+             aws configure set aws_access_key_id $AWS_KEY
+             aws configure set aws_secret_access_key $AWS_SECRET
+             aws configure set default.region eu-west-1
+      - run:
+          name: Load image
+          command: |
+            docker load --input workspace/docker-image/image.tar
+	  - run:
+          name: Push image to ECR
+          command: |
+            . venv/bin/activate
+            eval $(aws ecr get-login --region eu-west-1 --no-include-email)
+            docker tag $DKR_IMG:latest 166778461577.dkr.ecr.eu-west-1.amazonaws.com/$DKR_IMG:latest
+            docker push 166778461577.dkr.ecr.eu-west-1.amazonaws.com/$DKR_IMG:latest
       - run:
           name: "Prepare Environment"
           command: |
