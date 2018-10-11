@@ -1,14 +1,12 @@
 # .circleci/config.yml
-defaults: &defaults
-  machine:
-      image: circleci/classic:latest
-      environment:
-          ENV: CI
 
 version: 2
 jobs:
   build:
-    <<: *defaults    
+   machine:
+      image: circleci/classic:latest
+      environment:
+          ENV: CI
     steps:
       - checkout
       - run:
@@ -19,7 +17,8 @@ jobs:
             docker tag $DKR_IMG $DKR_REGITRY/$DKR_IMG:latest
             docker push $DKR_REGITRY/$DKR_IMG:latest
   deploy:
-    <<: *defaults
+    machine:
+      image: amazon/amazon-ecs-agent:latest
     branches:
       only:
         - master
