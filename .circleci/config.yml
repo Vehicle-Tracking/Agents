@@ -44,8 +44,8 @@ jobs:
             export PATH=~/bin:$PATH
             curl -O https://bootstrap.pypa.io/get-pip.py
             python get-pip.py
-            pip install --upgrade pip
-            pip install --upgrade awscli
+            pip install --upgrade pip --user
+            pip install --upgrade awscli --user
             echo "*** preconfiguring environment ... ***"    
             aws configure set aws_access_key_id $AWS_KEY
             aws configure set aws_secret_access_key $AWS_SECRET
