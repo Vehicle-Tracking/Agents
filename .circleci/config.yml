@@ -18,23 +18,15 @@ jobs:
             docker push $DKR_REGITRY/$DKR_IMG:latest
   deploy:
     machine:
-      image: amazon/amazon-ecs-agent:latest
+      image: circleci/python:2.7-jessie
+    working_directory: ~/circleci-docs
     steps:
       - attach_workspace:
           at: /root/project
       - run:
           name: "Prepare Environment"
           command: |
-             apk add curl
-             apk add unzip
-             curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"        
-             unzip awscli-bundle.zip ./awscli-bundle/install -b ~/bin/aws
-             export PATH=~/bin:$PATH
-             curl -O https://bootstrap.pypa.io/get-pip.py
-             python get-pip.py       
-             pip install --upgrade pip          
-             pip install botocore --upgrade
-             pip install awscli --upgrade
+             sudo pip install awscli --upgrade
              aws --version
              echo "*** preconfiguring environment ... ***"    
              aws configure set aws_access_key_id $AWS_KEY
