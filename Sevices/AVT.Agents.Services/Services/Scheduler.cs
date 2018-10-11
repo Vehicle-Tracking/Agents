@@ -14,7 +14,7 @@ namespace Avt.Agents.Services.Services
     public class Scheduler : TaskRunnerBase
     {
         private readonly ILogger<Simulator> _logger;
-        
+
         private readonly Dictionary<string, SchedulerDataModel> _waitingList;
         private readonly Dictionary<string, double> _mappingList;
         private static readonly object locker = new object();
@@ -22,7 +22,7 @@ namespace Avt.Agents.Services.Services
 
         public event EventHandler NewStatusArrived;
 
-        public Scheduler(ILogger<Simulator> logger) : base(false)
+        public Scheduler(ILogger<Simulator> logger) : base(logger)
         {
             _logger = logger;
             _waitingList = new Dictionary<string, SchedulerDataModel>(0);
@@ -50,7 +50,7 @@ namespace Avt.Agents.Services.Services
                 {
                     _waitingList.Remove(status.VehicleId);
 
-                    CreateItem(status.VehicleId, date, 75, AddToMappingList); // check it in the next 75 seconds, 15 second is for latency in the network
+                    CreateItem(status.VehicleId, date, status.VehicleStatus == 0 ? 60 : 75, AddToMappingList); // check it in the next 75 seconds, 15 second is for latency in the network
                 }
                 else
                 {
@@ -61,12 +61,8 @@ namespace Avt.Agents.Services.Services
                         {
                             JobQueue.Remove(key);
                         }
-                        CreateItem(status.VehicleId, date, 75, AddToMappingList);
                     }
-                    else
-                    {
-                        CreateItem(status.VehicleId, date, 75, AddToMappingList);
-                    }
+                    CreateItem(status.VehicleId, date, 75, AddToMappingList);
                 }
             }
         }
@@ -187,6 +183,7 @@ namespace Avt.Agents.Services.Services
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Error in Scheduler");
+                        await Task.Delay(TimeSpan.FromMilliseconds(2000), cancellationToken);
                         break; // give it a try in the next round
                     }
                 }
