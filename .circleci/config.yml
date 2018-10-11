@@ -12,11 +12,11 @@ jobs:
       - checkout
       - run:
           name: "Build And Push"
-          command: 
-            - docker login -u $DKR_UID -p $DKR_PWD
-            - docker build -f Dockerfile -t $DKR_IMG:{{ .BuildNum }} --memory=512m --memory-swap=512m .
-            - docker tag $DKR_IMG:{{ .BuildNum }} $DKR_IMG:latest
-            - docker push $DKR_REGITRY/$DKR_IMG:latest
+          command: |
+            docker login -u $DKR_UID -p $DKR_PWD
+            docker build -f Dockerfile -t $DKR_IMG:{{ .BuildNum }} --memory=512m --memory-swap=512m .
+            docker tag $DKR_IMG:{{ .BuildNum }} $DKR_IMG:latest
+            docker push $DKR_REGITRY/$DKR_IMG:latest
   deploy:
     <<: *defaults
     branches:
@@ -27,41 +27,42 @@ jobs:
           at: /root/project
       - run:
           name: "Prepare Environment"
-          command: 
-            - apk add curl
-            - apk add unzip
-            - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"        
-            - unzip awscli-bundle.zip ./awscli-bundle/install -b ~/bin/aws
-            - export PATH=~/bin:$PATH
-            - curl -O https://bootstrap.pypa.io/get-pip.py
-            - python get-pip.py       
-            - pip install --upgrade pip          
-            - pip install botocore --upgrade
-            - pip install awscli --upgrade
-            - aws --version
-            - echo "*** preconfiguring environment ... ***"    
-            - aws configure set aws_access_key_id $AWS_KEY
-            - aws configure set aws_secret_access_key $AWS_SECRET
-            - aws configure set default.region eu-west-1
+		  shell: /bin/bash
+          command: |
+             apk add curl
+             apk add unzip
+             curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"        
+             unzip awscli-bundle.zip ./awscli-bundle/install -b ~/bin/aws
+             export PATH=~/bin:$PATH
+             curl -O https://bootstrap.pypa.io/get-pip.py
+             python get-pip.py       
+             pip install --upgrade pip          
+             pip install botocore --upgrade
+             pip install awscli --upgrade
+             aws --version
+             echo "*** preconfiguring environment ... ***"    
+             aws configure set aws_access_key_id $AWS_KEY
+             aws configure set aws_secret_access_key $AWS_SECRET
+             aws configure set default.region eu-west-1
       - run:
           name: "Deploy Scheduler to ECS"
-          command: 
-            - aws ecs list-clusters | grep $ECS_CLUSTER_NAME || aws ecs create-cluster --cluster-name $ECS_CLUSTER_NAME
-            - echo "*** ecs Scheduler task initiating ... ***"  
-            - export TASK_VERSION=$(aws ecs register-task-definition --family $ECS_TASK_SHCEDULER --network-mode bridge --container-definitions '[{"name":"$DKR_IMG","image":"$DKR_IMG:latest","entryPoint":["dotnet", "Avt.Agents.Services.dll", "--ServiceName scheduler"],"memory":512,"memoryReservation":512,"portMappings":[{"containerPort":18018,"hostPort":80,"protocol":"tcp"}],"workingDirectory":"usr/app","disableNetworking":false,"privileged":true,"healthCheck":{"command":[""],"interval":300,"timeout":60,"retries":5,"startPeriod":150}}]' | jq --raw-output '.taskDefinition.revision')
-            - echo "*** Task Definition *** > " $ECS_TASK_SHCEDULER:$TASK_VERSION 
-            - aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $ECS_SERVICE_SHCEDULER || aws ecs create-service --service-name $ECS_SERVICE_SHCEDULER --cluster $ECS_CLUSTER_NAME --task-definition $ECS_TASK_SHCEDULER --desired-count 1
-            - echo "*** creating service and task for Scheduler ... ***"  
-            - export DEPLOYED_SERVICE=$(aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_SHCEDULER --task-definition $ECS_TASK_NAME:$TASK_VERSION  | jq --raw-output  '.service.serviceName')
-            - echo "Deployment of $DEPLOYED_SERVICE complete"
+          command: |
+             aws ecs list-clusters | grep $ECS_CLUSTER_NAME || aws ecs create-cluster --cluster-name $ECS_CLUSTER_NAME
+             echo "*** ecs Scheduler task initiating ... ***"  
+             export TASK_VERSION=$(aws ecs register-task-definition --family $ECS_TASK_SHCEDULER --network-mode bridge --container-definitions '[{"name":"$DKR_IMG","image":"$DKR_IMG:latest","entryPoint":["dotnet",  "Avt.Agents.Services.dll", "--ServiceName scheduler"],"memory":512,"memoryReservation":512,"portMappings":[{"containerPort":18018,"hostPort":80,"protocol":"tcp"}],"workingDirectory":"usr/ app","disableNetworking":false,"privileged":true,"healthCheck":{"command":[""],"interval":300,"timeout":60,"retries":5,"startPeriod":150}}]' | jq --raw-output '.taskDefinition.revision')
+             echo "*** Task Definition *** > " $ECS_TASK_SHCEDULER:$TASK_VERSION 
+             aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $ECS_SERVICE_SHCEDULER || aws ecs create-service --service-name $ECS_SERVICE_SHCEDULER --cluster $ECS_CLUSTER_NAME --task-definition $ECS_TASK_SHCEDULER  --desired-count 1
+             echo "*** creating service and task for Scheduler ... ***"  
+             export DEPLOYED_SERVICE=$(aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_SHCEDULER --task-definition $ECS_TASK_NAME:$TASK_VERSION  | jq --raw-output  '.service.serviceName')
+             echo "Deployment of $DEPLOYED_SERVICE complete"
       - run:
           name: "Deploy Simulator to ECS"
-          command: 
-            - aws ecs list-clusters | grep $ECS_CLUSTER_NAME || aws ecs create-cluster --cluster-name $ECS_CLUSTER_NAME
-            - echo "*** ecs simulator task initiating ... ***"  
-            - export TASK_VERSION=$(aws ecs register-task-definition --family $ECS_TASK_SIMULATOR --container-definitions '[{"name":"$DKR_IMG","image":"$DKR_IMG:latest","entryPoint":["dotnet", "Avt.Agents.Services.dll", "--ServiceName simulator"],"memory":512,"memoryReservation":512,"portMappings":[{"containerPort":18018,"hostPort":80,"protocol":"tcp"}],"workingDirectory":"usr/app","disableNetworking":false,"privileged":true,"healthCheck":{"command":[""],"interval":300,"timeout":60,"retries":5,"startPeriod":150}}]' | jq --raw-output '.taskDefinition.revision')
-            - echo "*** Task Definition *** > " $ECS_TASK_SIMULATOR:$TASK_VERSION 
-            - aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $ECS_SERVICE_SIMULATOR || aws ecs create-service --service-name $ECS_SERVICE_SIMULATOR --cluster $ECS_CLUSTER_NAME --task-definition $ECS_TASK_SIMULATOR --desired-count 1
-            - echo "*** creating service and task for simulator ... ***"  
-            - export DEPLOYED_SERVICE=$(aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_SIMULATOR --task-definition $ECS_TASK_NAME:$TASK_VERSION  | jq --raw-output  '.service.serviceName')
-            - echo "Deployment of $DEPLOYED_SERVICE complete"
+          command: |
+             aws ecs list-clusters | grep $ECS_CLUSTER_NAME || aws ecs create-cluster --cluster-name $ECS_CLUSTER_NAME
+             echo "*** ecs simulator task initiating ... ***"  
+             export TASK_VERSION=$(aws ecs register-task-definition --family $ECS_TASK_SIMULATOR --container-definitions '[{"name":"$DKR_IMG","image":"$DKR_IMG:latest","entryPoint":["dotnet", "Avt.Agents.Services.dll", "-- ServiceName simulator"],"memory":512,"memoryReservation":512,"portMappings":[{"containerPort":18018,"hostPort":80,"protocol":"tcp"}],"workingDirectory":"usr/ app","disableNetworking":false,"privileged":true,"healthCheck":{"command":[""],"interval":300,"timeout":60,"retries":5,"startPeriod":150}}]' | jq --raw-output '.taskDefinition.revision')
+             echo "*** Task Definition *** > " $ECS_TASK_SIMULATOR:$TASK_VERSION 
+             aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $ECS_SERVICE_SIMULATOR || aws ecs create-service --service-name $ECS_SERVICE_SIMULATOR --cluster $ECS_CLUSTER_NAME --task-definition $ECS_TASK_SIMULATOR  --desired-count 1
+             echo "*** creating service and task for simulator ... ***"  
+             export DEPLOYED_SERVICE=$(aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_SIMULATOR --task-definition $ECS_TASK_NAME:$TASK_VERSION  | jq --raw-output  '.service.serviceName')
+             echo "Deployment of $DEPLOYED_SERVICE complete"
