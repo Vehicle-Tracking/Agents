@@ -1,0 +1,34 @@
+#- job: Build  # name of the job, no spaces allowed
+#  displayName: Build agents  # friendly name to display in the UI
+#  dependsOn: string | [ string ]
+#  condition: string
+#  strategy:
+#    matrix: # matrix strategy, see below
+#    parallel: # parallel strategy, see below
+#    maxParallel: 2 # maximum number of agents to simultaneously run copies of this job on
+#  continueOnError: boolean  # 'true' if future jobs should run even if this job fails; defaults to 'false'
+#  pool: ""
+#  workspace:
+#    clean: outputs | resources | all # what to clean up after the job runs
+#  container: string # container resource to run this job inside
+#  timeoutInMinutes: number # how long to run the job before automatically cancelling
+#  cancelTimeoutInMinutes: number # how much time to give run always even if cancelled tasks before killing them
+#  variables: { string: string } | [ variable ]
+#  steps: 
+#      
+#      
+#      - task: Docker@1
+#  displayName: 'Build an image'
+#  inputs:
+#    imageName: 'contoso.azurecr.io/repositoryname:$(Build.BuildId)'
+#- task: Docker@1
+#  displayName: Login
+#  inputs:
+#    azureSubscriptionEndpoint: 'ContosoAzureSubscription'
+#    azureContainerRegistry: contoso.azurecr.io
+#    command: login
+#- task: Docker@1
+#  displayName: 'Push an image'
+#  inputs:
+#    command: 'push'
+#    imageName: 'contoso.azurecr.io/repositoryname:$(Build.BuildId)'
