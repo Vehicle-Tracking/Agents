@@ -10,7 +10,7 @@ namespace Avt.Agents.Services.Services
     public class Simulator : TaskRunnerBase
     {
         private readonly ILogger<Simulator> _logger;
-        public Simulator(ILogger<Simulator> logger) : base(true)
+        public Simulator(ILogger<Simulator> logger) : base(logger, true)
         {
             _logger = logger;
         }
@@ -51,6 +51,7 @@ namespace Avt.Agents.Services.Services
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Error in Simulator");
+                        await Task.Delay(TimeSpan.FromMilliseconds(2000), cancellationToken);
                         break; // give it a try in the next round
                     }
                 }

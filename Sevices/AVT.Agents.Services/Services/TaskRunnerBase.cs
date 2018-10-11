@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Avt.Agents.Services.DTO;
-using Avt.Agents;
 using Avt.Agents.Services.Common;
-using Avt.Agents.Services.DTO;
+using Microsoft.Extensions.Logging;
 
 namespace Avt.Agents.Services.Services
 {
     public abstract class TaskRunnerBase : IDisposable
     {
+        private ILogger _logger;
         protected readonly SortedDictionary<double, SchedulerDataModel> JobQueue;
        // protected CancellationTokenSource Cts;
         private Task _runningTask;
         private readonly bool _intializeQueue;
 
         public abstract string TaskName { get; }
-        protected TaskRunnerBase(bool intializeQueue = false)
+        protected TaskRunnerBase(ILogger logger, bool intializeQueue = false)
         {
             this._intializeQueue = intializeQueue;
             JobQueue = new SortedDictionary<double, SchedulerDataModel>(
@@ -62,10 +62,17 @@ namespace Avt.Agents.Services.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            if (_intializeQueue)
-                await Init(cancellationToken);
+            try
+            {
+                if (_intializeQueue)
+                    await Init(cancellationToken);
 
-            _runningTask = AlwaysRunner(cancellationToken);
+                _runningTask = AlwaysRunner(cancellationToken);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+            }
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
