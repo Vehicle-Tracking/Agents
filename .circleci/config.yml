@@ -29,9 +29,9 @@ jobs:
           name: "Prepare Environment"
           command: 
             - apk add curl
+            - apk add unzip
             - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"        
-            - unzip awscli-bundle.zip
-            - ./awscli-bundle/install -b ~/bin/aws
+            - unzip awscli-bundle.zip ./awscli-bundle/install -b ~/bin/aws
             - export PATH=~/bin:$PATH
             - curl -O https://bootstrap.pypa.io/get-pip.py
             - python get-pip.py       
