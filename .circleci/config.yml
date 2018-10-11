@@ -1,8 +1,9 @@
 # .circleci/config.yml
 defaults: &defaults
-  docker:
-    - image: $DKR_REGITRY/$DKR_IMG:latest
-  working_directory: ~/project
+  machine:
+      image: circleci/classic:latest
+      environment:
+          ENV: CI
 
 version: 2
 jobs:
