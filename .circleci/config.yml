@@ -1,7 +1,7 @@
 # .circleci/config.yml
 defaults: &defaults
   docker:
-    - image: $DKR_REGITRY/"$DKR_IMG:latest
+    - image: $DKR_REGITRY/$DKR_IMG:latest
   working_directory: ~/project
 
 version: 2
