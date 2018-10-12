@@ -35,21 +35,26 @@ jobs:
       - setup_remote_docker
       - attach_workspace:
           at: workspace
+      - restore_cache:
+          key: v1-{{ checksum "requirements.txt" }}
       - run:
-         name: "Prepare Environment"
-         command: |
-            curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"        
-            unzip awscli-bundle.zip 
-            ./awscli-bundle/install -b ~/bin/aws
-            export PATH=~/bin:$PATH
-            curl -O https://bootstrap.pypa.io/get-pip.py
-            python get-pip.py
-            pip install --upgrade pip --user
-            pip install --upgrade awscli --user
+          name: Install awscli
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - save_cache:
+          key: v1-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: Configuring Environment
+          command: | 
+            . venv/bin/activate            
             echo "*** preconfiguring environment ... ***"    
-            aws configure set aws_access_key_id $AWS_KEY
-            aws configure set aws_secret_access_key $AWS_SECRET
-            aws configure set default.region eu-west-1
+            eval aws configure set aws_access_key_id $AWS_KEY
+            eval aws configure set aws_secret_access_key $AWS_SECRET
+            eval aws configure set default.region eu-west-1
       - run:
           name: Load image from local file
           command: |
@@ -57,7 +62,8 @@ jobs:
       - run:
           name: Push image to ECR
           command: |
-            $(aws ecr get-login --region eu-west-1 --no-include-email)
+            . venv/bin/activate
+            eval $(aws ecr get-login --region eu-west-1 --no-include-email)
             docker tag $DKR_IMG 166778461577.dkr.ecr.eu-west-1.amazonaws.com/$DKR_IMG:latest
             docker push 166778461577.dkr.ecr.eu-west-1.amazonaws.com/$DKR_IMG:latest
       - run:
