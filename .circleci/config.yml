@@ -74,12 +74,16 @@ jobs:
             export SERVICE_NAME=$ECS_SERVICE_SHCEDULER
             export ARG_TSK="scheduler"
             echo "*** script initiating, i received these args $TASK_NAME $SERVICE_NAME $ARG_TSK ... ***"  
+            echo "script to execute: aws ecs list-clusters | grep $ECS_CLUSTER_NAME || aws ecs create-cluster --cluster-name $ECS_CLUSTER_NAME)"
             export CLUSTERS=$(aws ecs list-clusters | grep $ECS_CLUSTER_NAME || aws ecs create-cluster --cluster-name $ECS_CLUSTER_NAME)
             echo "*** ecs $TASM_NAME task initiating ... ***"
-            export TASK_VERSION=$(aws ecs register-task-definition --family $TASK_NAME --requires-compatibilities FARGATE --cpu 256 --memory 1024 --network-mode awsvpc --container-definitions '[{"name":"agents","image":"{$DKR_IMG}:latest","entryPoint":["dotnet", "Avt.Agents.Services.dll","--ServiceName $ARG_TSK"],"memory":512,"portMappings":[{"containerPort":18018}],"workingDirectory":"usr/             app","disableNetworking":false,"privileged":true,"healthCheck":{"command":[""],"interval":300,"timeout":60,"retries":5,"startPeriod":150}}]' | jq --raw-output '.taskDefinition.revision')
+            echo "script to execute: aws ecs register-task-definition --family $TASK_NAME --requires-compatibilities FARGATE --cpu 256 --memory 1024 --network-mode awsvpc --container-definitions '[{"name":"container-${TASK_NAME}-service","image":"166778461577.dkr.ecr.eu-west-1.amazonaws.com/agents:latest","entryPoint":["dotnet", "Avt.Agents.Services.dll","--ServiceName $ARG_TSK"],"memory":512,"portMappings":[{"containerPort":18018}],"workingDirectory":"usr/app","disableNetworking":false,"privileged":true,"healthCheck":{"command":[""],"interval":300,"timeout":60,"retries":5,"startPeriod":150}}]' | jq --raw-output '.taskDefinition.revision'"
+            export TASK_VERSION=$(aws ecs register-task-definition --family $TASK_NAME --requires-compatibilities FARGATE --cpu 256 --memory 1024 --network-mode awsvpc --container-definitions '[{"name":"container-${TASK_NAME}-service","image":"166778461577.dkr.ecr.eu-west-1.amazonaws.com/agents:latest","entryPoint":["dotnet", "Avt.Agents.Services.dll","--ServiceName $ARG_TSK"],"memory":512,"portMappings":[{"containerPort":18018}],"workingDirectory":"usr/app","disableNetworking":false,"privileged":true,"healthCheck":{"command":[""],"interval":300,"timeout":60,"retries":5,"startPeriod":150}}]' | jq --raw-output '.taskDefinition.revision')
+            echo "script to execute: aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $SERVICE_NAME || aws ecs create-service --service-name $SERVICE_NAME --cluster $ECS_CLUSTER_NAME --task-definition $TASK_NAME  --desired-count 1"
             echo "*** Task Definition *** >  $TASK_NAME:$TASK_VERSION"
             export SERVICES=$(aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $SERVICE_NAME || aws ecs create-service --service-name $SERVICE_NAME --cluster $ECS_CLUSTER_NAME --task-definition $TASK_NAME  --desired-count 1)
             echo "*** creating service and task for $TASK_NAME ... ***" 
+            echo "script to execute: aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $SERVICE_NAME --task-definition $TASK_NAME:$TASK_VERSION  | jq --raw-output '.service.serviceName'" 
             export DEPLOYED_SERVICE=$(aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $SERVICE_NAME --task-definition $TASK_NAME:$TASK_VERSION  | jq --raw-output '.service.serviceName')
             echo "Deployment of $DEPLOYED_SERVICE complete"
       - run:
@@ -90,12 +94,16 @@ jobs:
             export SERVICE_NAME=$ECS_SERVICE_SIMULATOR
             export ARG_TSK="simulator"
             echo "*** script initiating, i received these args $TASK_NAME $SERVICE_NAME $ARG_TSK ... ***"  
+            echo "script to execute: aws ecs list-clusters | grep $ECS_CLUSTER_NAME || aws ecs create-cluster --cluster-name $ECS_CLUSTER_NAME)"
             export CLUSTERS=$(aws ecs list-clusters | grep $ECS_CLUSTER_NAME || aws ecs create-cluster --cluster-name $ECS_CLUSTER_NAME)
             echo "*** ecs $TASM_NAME task initiating ... ***"
-            export TASK_VERSION=$(aws ecs register-task-definition --family $TASK_NAME --requires-compatibilities FARGATE --cpu 256 --memory 1024 --network-mode awsvpc --container-definitions '[{"name":"agents","image":"{$DKR_IMG}:latest","entryPoint":["dotnet", "Avt.Agents.Services.dll","--ServiceName $ARG_TSK"],"memory":512,"portMappings":[{"containerPort":18019}],"workingDirectory":"usr/             app","disableNetworking":false,"privileged":true,"healthCheck":{"command":[""],"interval":300,"timeout":60,"retries":5,"startPeriod":150}}]' | jq --raw-output '.taskDefinition.revision')
+            echo "script to execute: aws ecs register-task-definition --family $TASK_NAME --requires-compatibilities FARGATE --cpu 256 --memory 1024 --network-mode awsvpc --container-definitions '[{"name":"container-${TASK_NAME}-service","image":"166778461577.dkr.ecr.eu-west-1.amazonaws.com/agents:latest","entryPoint":["dotnet", "Avt.Agents.Services.dll","--ServiceName $ARG_TSK"],"memory":512,"portMappings":[{"containerPort":18018}],"workingDirectory":"usr/app","disableNetworking":false,"privileged":true,"healthCheck":{"command":[""],"interval":300,"timeout":60,"retries":5,"startPeriod":150}}]' | jq --raw-output '.taskDefinition.revision'"
+            export TASK_VERSION=$(aws ecs register-task-definition --family $TASK_NAME --requires-compatibilities FARGATE --cpu 256 --memory 1024 --network-mode awsvpc --container-definitions '[{"name":"container-${TASK_NAME}-service","image":"166778461577.dkr.ecr.eu-west-1.amazonaws.com/agents:latest","entryPoint":["dotnet", "Avt.Agents.Services.dll","--ServiceName $ARG_TSK"],"memory":512,"portMappings":[{"containerPort":18018}],"workingDirectory":"usr/app","disableNetworking":false,"privileged":true,"healthCheck":{"command":[""],"interval":300,"timeout":60,"retries":5,"startPeriod":150}}]' | jq --raw-output '.taskDefinition.revision')
+            echo "script to execute: aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $SERVICE_NAME || aws ecs create-service --service-name $SERVICE_NAME --cluster $ECS_CLUSTER_NAME --task-definition $TASK_NAME  --desired-count 1"
             echo "*** Task Definition *** >  $TASK_NAME:$TASK_VERSION"
             export SERVICES=$(aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $SERVICE_NAME || aws ecs create-service --service-name $SERVICE_NAME --cluster $ECS_CLUSTER_NAME --task-definition $TASK_NAME  --desired-count 1)
             echo "*** creating service and task for $TASK_NAME ... ***" 
+            echo "script to execute: aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $SERVICE_NAME --task-definition $TASK_NAME:$TASK_VERSION  | jq --raw-output '.service.serviceName'" 
             export DEPLOYED_SERVICE=$(aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $SERVICE_NAME --task-definition $TASK_NAME:$TASK_VERSION  | jq --raw-output '.service.serviceName')
             echo "Deployment of $DEPLOYED_SERVICE complete"
 workflows:
