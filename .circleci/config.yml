@@ -70,12 +70,18 @@ jobs:
           name: Deploy Scheduler to ECS
           command: |
             . venv/bin/activate
-            sh ./deployement.sh $ECS_TASK_SHCEDULER $ECS_SERVICE_SHCEDULER scheduler
+            export TASK_NAME="${ECS_TASK_SHCEDULER}"
+            export SERVICE_NAME="${ECS_SERVICE_SHCEDULER}"
+            export ARG_TSK="scheduler"
+            ./deployement.sh
       - run:
           name: Deploy Simulator to ECS
           command: |
             . venv/bin/activate
-            sh ./deployement.sh $ECS_TASK_SIMULATOR $ECS_SERVICE_SIMULATOR simulator
+            export TASK_NAME="${ECS_TASK_SIMULATOR}"
+            export SERVICE_NAME="${ECS_SERVICE_SIMULATOR}"
+            export ARG_TSK="simulator"
+            ./deployement.sh
 workflows:
   version: 2
   build-deploy:
