@@ -7,7 +7,9 @@ TASK_NAME=$1
 SERVICE_NAME=$2
 ARG_TSK=$3
 
-aws ecs list-clusters | grep $ECS_CLUSTER_NAME || aws ecs create-cluster --cluster-name $ECS_CLUSTER_NAME
+echo "*** script initiating we received these args {$TASK_NAME} {$SERVICE_NAME} {$ARG_TSK} ... ***"  
+
+export CLUSTERS=$(aws ecs list-clusters | grep $ECS_CLUSTER_NAME || aws ecs create-cluster --cluster-name $ECS_CLUSTER_NAME)
 
 echo "*** ecs {$TASM_NAME} task initiating ... ***"  
 
@@ -15,7 +17,7 @@ export TASK_VERSION=$(aws ecs register-task-definition --family $TASK_NAME --req
 
 echo "*** Task Definition *** > " $TASK_NAME:$TASK_VERSION 
 
-aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $SERVICE_NAME || aws ecs create-service --service-name $SERVICE_NAME --cluster $ECS_CLUSTER_NAME --task-definition $TASK_NAME  --desired-count 1
+export SERVICES=$(aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $SERVICE_NAME || aws ecs create-service --service-name $SERVICE_NAME --cluster $ECS_CLUSTER_NAME --task-definition $TASK_NAME  --desired-count 1)
 
 echo "*** creating service and task for {$TASK_NAME} ... ***" 
 
