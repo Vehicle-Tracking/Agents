@@ -25,8 +25,27 @@ RUN apk add --no-cache --virtual .build-deps \
 ENV DOTNET_USE_POLLING_FILE_WATCHER=true \ 
     # Skip extraction of XML docs - generally not useful within an image/container - helps performance
     NUGET_XMLDOC_MODE=skip
-COPY ./*.csproj ./
+
+COPY *.csproj ./
 RUN dotnet restore
+
+WORKDIR /app
 COPY . ./
-RUN dotnet build -c Release 
-ENTRYPOINT ["dotnet", "Avt.Agents.Services.dll"]
+RUN dotnet build -c Release .
+
+RUN dotnet publish -c Release -o /app/out
+
+ENTRYPOINT ["dotnet", "out/AVT.Agents.Services.dll"]
+
+# before run please go to the app directory => cd Sevices/AVT.Services.Agents
+# build the image => docker build -t agents . # '.' means the current context which is closely related to where the docker is located
+# check the contents of the image, pretty cool => docker run -it --entrypoint sh  agents  #press ls to see the content or cd to go to a directory
+# run simulator => docker run --entrypoint '/bin/sh' agents -c 'dotnet out/AVT.Agents.Services.dll --ServiceName simulator'
+# run scheduler => docker run --entrypoint '/bin/sh' agents -c 'dotnet out/AVT.Agents.Services.dll --ServiceName scheduler'
+# make sure to stop the images after testing
+# just get the image id by => docker ps
+# select images ids and stop them => docker stop [one or more image ids separated by comma space] # like this => docker stop 47527265c9aa, 877706df7827
+# notice: you need to have already configured aws credentional in the image since i will set those configuration in cicd tools you might need to 
+# do it manually once running the image locally to do that use -e option in docker run or i have made some changes in the code
+# you can pass them in input argument wtih this names => aws_access_key_id, aws_secret_access_key
+# please notice how we passed service name to run the container

@@ -1,0 +1,34 @@
+{
+  "cluster": "$ECS_CLUSTER_NAME",
+  "serviceName": "$SERVICE_NAME",
+  "taskDefinition": "$TASK_NAME",
+  "loadBalancers": [
+    {
+      "targetGroupArn": "sg-0ccf54ddcbb1bb3eb",
+      "loadBalancerName": "agents-load-balancer ",
+      "containerName": "$CONTAINER_NAME",
+      "containerPort": 80
+    }
+  ],
+  "desiredCount": 1,
+  "launchType": "FARGATE",
+  "deploymentConfiguration": {
+    "maximumPercent": 150,
+    "minimumHealthyPercent": 0
+  },
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": [
+        "subnet-519ffc19",
+        "subnet-61861507",
+        "subnet-cb37ea91"
+      ],
+      "securityGroups": [
+        "subnet-cb37ea91"
+      ],
+      "assignPublicIp": "ENABLED"
+    }
+  },
+  "healthCheckGracePeriodSeconds": 0,
+  "schedulingStrategy": "REPLICA"
+}

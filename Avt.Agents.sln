@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.circleci\config.yml = .circleci\config.yml
 		deployement.sh = deployement.sh
 		requirements.txt = requirements.txt
+		service-definition.json = service-definition.json
+		task-definition.json = task-definition.json
 	EndProjectSection
 EndProject
 Global

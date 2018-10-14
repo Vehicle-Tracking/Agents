@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Avt.Agents.Services.DTO;
@@ -109,7 +110,7 @@ namespace Avt.Agents.Services.Services
         {
             try
             {
-                var sqs = new AmazonSQSClient();
+                var sqs = new AmazonSQSClient(RegionEndpoint.EUWest1);
                 var receiveMessageRequest = new ReceiveMessageRequest
                 {
                     QueueUrl = "https://sqs.eu-west-1.amazonaws.com/166778461577/StatusCheckSchedulerNotifierQueue"
@@ -118,8 +119,7 @@ namespace Avt.Agents.Services.Services
 
                 try
                 {
-                    receiveMessageResponse =
-                        await sqs.ReceiveMessageAsync(receiveMessageRequest, cancellationToken);
+                    receiveMessageResponse = await sqs.ReceiveMessageAsync(receiveMessageRequest, cancellationToken);
                 }
                 catch (Exception ex)
                 {

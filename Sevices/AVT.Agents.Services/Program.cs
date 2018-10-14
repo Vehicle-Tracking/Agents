@@ -12,7 +12,7 @@ namespace Avt.Agents.Services
     public class Program
     {
         public static async Task Main(string[] args)
-        {
+        {         
             var builder = new HostBuilder()
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {

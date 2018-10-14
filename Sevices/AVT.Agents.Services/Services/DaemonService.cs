@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.Runtime.CredentialManagement;
 using Avt.Agents.Services.Common;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,24 @@ namespace Avt.Agents.Services.Services
             Scheduler scheduler)
         {
             _logger = logger;
+           
+
+            if (!string.IsNullOrEmpty(Shared.Configuration["aws_access_key_id"]) &&
+                !string.IsNullOrEmpty(Shared.Configuration["aws_secret_access_key"]))
+            {
+                var credentialFile = new NetSDKCredentialsFile();
+                var option = new CredentialProfileOptions
+                {
+                    AccessKey = Shared.Configuration["aws_access_key_id"],
+                    SecretKey = Shared.Configuration["aws_secret_access_key"]
+                };
+                var profile = new CredentialProfile("default", option)
+                {
+                    Region = Amazon.RegionEndpoint.EUWest1                    
+                };
+                credentialFile.RegisterProfile(profile);
+            }
+
             var serviceName = Shared.Configuration["ServiceName"];
             if ("simulator".Equals(serviceName, StringComparison.OrdinalIgnoreCase))
                 _task = simulator;
