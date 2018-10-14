@@ -84,10 +84,10 @@ jobs:
             
             export CLUSTERS=$(aws ecs list-clusters | grep $ECS_CLUSTER_NAME || aws ecs create-cluster --cluster-name $ECS_CLUSTER_NAME)
             echo "*** ecs $TASM_NAME task initiating ... ***"
-            export TASK_VERSION=$(aws ecs register-task-definition --cli-input-json './task-definition.json' | $JQ '.taskDefinition.revision')
+            export TASK_VERSION=$(aws ecs register-task-definition --cli-input-json file://task-definition.json | $JQ '.taskDefinition.revision')
             
             echo "*** Task Definition *** >  $TASK_NAME:$TASK_VERSION"
-            export SERVICES=$(aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $SERVICE_NAME || aws ecs create-service --cli-input-json './service-definition.json')
+            export SERVICES=$(aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $SERVICE_NAME || aws ecs create-service --cli-input-json file://service-definition.json)
             
             echo "*** creating service and task for $TASK_NAME ... ***" 
             export DEPLOYED_SERVICE=$(aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $SERVICE_NAME --task-definition $TASK_NAME:$TASK_VERSION  | $JQ '.service.serviceName')
@@ -111,10 +111,10 @@ jobs:
             export CLUSTERS=$(aws ecs list-clusters | grep $ECS_CLUSTER_NAME || aws ecs create-cluster --cluster-name $ECS_CLUSTER_NAME)
             echo "*** ecs $TASM_NAME task initiating ... ***"
             
-            export TASK_VERSION=$(aws ecs register-task-definition --cli-input-json './task-definition.json' | $JQ '.taskDefinition.revision')
+            export TASK_VERSION=$(aws ecs register-task-definition --cli-input-json file://task-definition.json | $JQ '.taskDefinition.revision')
             
             echo "*** Task Definition *** >  $TASK_NAME:$TASK_VERSION"
-            export SERVICES=$(aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $SERVICE_NAME || aws ecs create-service --cli-input-json './service-definition.json')
+            export SERVICES=$(aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $SERVICE_NAME || aws ecs create-service --cli-input-json file://service-definition.json)
             
             echo "*** creating service and task for $TASK_NAME ... ***" 
             export DEPLOYED_SERVICE=$(aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $SERVICE_NAME --task-definition $TASK_NAME:$TASK_VERSION  | $JQ '.service.serviceName')
