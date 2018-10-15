@@ -29,6 +29,5 @@
       "assignPublicIp": "ENABLED"
     }
   },
-  "healthCheckGracePeriodSeconds": 0,
   "schedulingStrategy": "REPLICA"
 }

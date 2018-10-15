@@ -1,7 +1,7 @@
 {
   "family": "$TASK_NAME",
-  "taskRoleArn": " $TASK_EXECUTOR",
-  "executionRoleArn": " $TASK_EXECUTOR",
+  "taskRoleArn": "$TASK_EXECUTOR",
+  "executionRoleArn": "$TASK_EXECUTOR",
   "networkMode": "awsvpc",
   "containerDefinitions": [
     {
