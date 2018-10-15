@@ -79,11 +79,15 @@ jobs:
             JQ="jq --raw-output --exit-status"
             
             echo "*** script initiating, i received these args $TASK_NAME $SERVICE_NAME $ARG_TSK ... ***"  
-            task_template= {"family":"%s","taskRoleArn":"%s","executionRoleArn":"%s","networkMode":"awsvpc","containerDefinitions":[{"name":"%s","image":"166778461577.dkr.ecr.eu-west-1.amazonaws.com/agents:latest","memory":512,"portMappings":[{"containerPort":80,"hostPort":80,"protocol":"tcp"}],"essential":true,"entryPoint":["%S"],"environment":[{"name":"aws_access_key_id","value":"%s"},{"name":"aws_secret_access_key","value":"%s"}],"workingDirectory":"/app","disableNetworking":false,"privileged":false,"healthCheck":{"command":[""],"interval":300,"timeout":60,"retries":5,"startPeriod":1}}],"requiresCompatibilities":["FARGATE"],"cpu":256,"memory":1024}
+            task_template= {"family":"%s","taskRoleArn":"%s","executionRoleArn":"%s","networkMode":"awsvpc","containerDefinitions":[{"name":"%s","image":"166778461577.dkr.ecr.eu-west-1.amazonaws.com/agents:latest","memory":512,"portMappings":[{"containerPort":80,"hostPort":80,"protocol":"tcp"}],"essential":true,"entryPoint":["%s"],"environment":[{"name":"aws_access_key_id","value":"%s"},{"name":"aws_secret_access_key","value":"%s"}],"workingDirectory":"/app","disableNetworking":false,"privileged":false,"healthCheck":{"command":[""],"interval":300,"timeout":60,"retries":5,"startPeriod":1}}],"requiresCompatibilities":["FARGATE"],"cpu":256,"memory":1024}
             task_script=$(printf "$task_template" $TASK_NAME $TASK_EXECUTOR $TASK_EXECUTOR $CONTAINER_NAME $ENTRY_POINT $AWS_KEY $AWS_SECRET)
+
+            echo "*** task_script: $task_script ... ***"  
 
             service_template={"cluster":"%s","serviceName":"%s","taskDefinition":"$TASK_NAME","loadBalancers":[{"targetGroupArn":"sg-0ccf54ddcbb1bb3eb","loadBalancerName":"agents-load-balancer ","containerName":"%s","containerPort":80}],"desiredCount":1,"launchType":"FARGATE","deploymentConfiguration":{"maximumPercent":150,"minimumHealthyPercent":0},"networkConfiguration":{"awsvpcConfiguration":{"subnets":["subnet-519ffc19","subnet-61861507","subnet-cb37ea91"],"securityGroups":["subnet-cb37ea91"],"assignPublicIp":"ENABLED"}},"schedulingStrategy":"REPLICA"}
             service_script=$(printf "$service_template" $ECS_CLUSTER_NAME $SERVICE_NAME $CONTAINER_NAME)
+
+            echo "*** service_script: $service_script ... ***"  
             
             export CLUSTERS=$(aws ecs list-clusters | grep $ECS_CLUSTER_NAME || aws ecs create-cluster --cluster-name $ECS_CLUSTER_NAME)
 
@@ -111,22 +115,20 @@ jobs:
             JQ="jq --raw-output --exit-status"
             
             echo "*** script initiating, i received these args $TASK_NAME $SERVICE_NAME $ARG_TSK ... ***"  
-            task_template= {"family":"%s","taskRoleArn":"%s","executionRoleArn":"%s","networkMode":"awsvpc","containerDefinitions":[{"name":"%s","image":"166778461577.dkr.ecr.eu-west-1.amazonaws.com/agents:latest","memory":512,"portMappings":[{"containerPort":80,"hostPort":80,"protocol":"tcp"}],"essential":true,"entryPoint":["%S"],"environment":[{"name":"aws_access_key_id","value":"%s"},{"name":"aws_secret_access_key","value":"%s"}],"workingDirectory":"/app","disableNetworking":false,"privileged":false,"healthCheck":{"command":[""],"interval":300,"timeout":60,"retries":5,"startPeriod":1}}],"requiresCompatibilities":["FARGATE"],"cpu":256,"memory":1024}
+            task_template= {"family":"%s","taskRoleArn":"%s","executionRoleArn":"%s","networkMode":"awsvpc","containerDefinitions":[{"name":"%s","image":"166778461577.dkr.ecr.eu-west-1.amazonaws.com/agents:latest","memory":512,"portMappings":[{"containerPort":80,"hostPort":80,"protocol":"tcp"}],"essential":true,"entryPoint":["%s"],"environment":[{"name":"aws_access_key_id","value":"%s"},{"name":"aws_secret_access_key","value":"%s"}],"workingDirectory":"/app","disableNetworking":false,"privileged":false,"healthCheck":{"command":[""],"interval":300,"timeout":60,"retries":5,"startPeriod":1}}],"requiresCompatibilities":["FARGATE"],"cpu":256,"memory":1024}
             task_script=$(printf "$task_template" $TASK_NAME $TASK_EXECUTOR $TASK_EXECUTOR $CONTAINER_NAME $ENTRY_POINT $AWS_KEY $AWS_SECRET)
+
+            echo "*** task_script: $task_script ... ***"  
 
             service_template={"cluster":"%s","serviceName":"%s","taskDefinition":"$TASK_NAME","loadBalancers":[{"targetGroupArn":"sg-0ccf54ddcbb1bb3eb","loadBalancerName":"agents-load-balancer ","containerName":"%s","containerPort":80}],"desiredCount":1,"launchType":"FARGATE","deploymentConfiguration":{"maximumPercent":150,"minimumHealthyPercent":0},"networkConfiguration":{"awsvpcConfiguration":{"subnets":["subnet-519ffc19","subnet-61861507","subnet-cb37ea91"],"securityGroups":["subnet-cb37ea91"],"assignPublicIp":"ENABLED"}},"schedulingStrategy":"REPLICA"}
             service_script=$(printf "$service_template" $ECS_CLUSTER_NAME $SERVICE_NAME $CONTAINER_NAME)
+
+            echo "*** service_script: $service_script ... ***"  
             
             export CLUSTERS=$(aws ecs list-clusters | grep $ECS_CLUSTER_NAME || aws ecs create-cluster --cluster-name $ECS_CLUSTER_NAME)
 
             echo "*** ecs $TASM_NAME task initiating ... ***"
             export TASK_VERSION=$(aws ecs  register-task-definition --cli-input-json $task_script | $JQ '.taskDefinition.revision')
-            
-            echo "*** Task Definition *** >  $TASK_NAME:$TASK_VERSION"
-            export SERVICES=$(aws ecs list-services --cluster $ECS_CLUSTER_NAME  | grep $SERVICE_NAME || aws ecs create-service --cli-input-json $service_script)
-            
-            echo "*** creating service and task for $TASK_NAME ... ***" 
-            export DEPLOYED_SERVICE=$(aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $SERVICE_NAME --task-definition $TASK_NAME:$TASK_VERSION  | $JQ '.service.serviceName')
             echo "Deployment of $DEPLOYED_SERVICE complete"
 workflows:
   version: 2
