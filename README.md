@@ -1,7 +1,9 @@
 # Agents
 2 Agents ( Simulator &amp; Scheduler)  + 2 Lambda Functions ( Message Transformer+Gateway Negotiator, Push Notification Dispatcher - API Authorizer)
 
-#Description
+# Description
+
+__you can find the general system architecture picture in one of other parts (Front-End, Back-End) repository__
 
 **Simulator Agent:** This agent is a simulator for an autonmous vehicle which is sending its status on a regular basis (lets say every 30 seconds)
 
